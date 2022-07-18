@@ -28,7 +28,7 @@
       <!-- toggle view by clicking on cart button -->
       <a @click="toggleView" class="top-bar-cart-link">
         <i class="icofont-cart-alt icofont-1x"></i>
-        <span>Cart (0)</span>
+        <span>Cart({{totalQuantity}})</span>
       </a>
     </header>
 
@@ -94,7 +94,7 @@
     </footer>
     <!-- add sidebar and toggle functionality -->
     <!-- add cart to pass as props -->
-    <side-bar v-if="showSideBar" :toggle='toggleView' :cart="cart" :inventory="inventory" />
+    <side-bar v-if="showSideBar" :toggle='toggleView' :cart="cart" :inventory="inventory" :remove="removeItem" />
 
   </div>
   <!-- add vue js -->
@@ -111,6 +111,14 @@
           showSideBar: false,
         }
       },
+      computed: {
+        totalQuantity() {
+          const total = Object.values(this.cart).reduce((acc, item, index) => {
+            return acc + item;
+          }, 0)
+          return total;
+        }
+      },
       methods: {
         addToCart(name, i) {
           //  receive type and number and then increase it
@@ -118,11 +126,15 @@
             this.cart[name] = 0;
           }
           this.cart[name] += this.inventory[i].quantity;
+          this.inventory[i].quantity = 0;
           console.log(this.cart);
         },
         toggleView() {
           return this.showSideBar = !this.showSideBar;
         },
+        removeItem(item) {
+          delete this.cart[item];
+        }
 
       },
       // fetch data from food.json
@@ -134,7 +146,7 @@
     })
     // add sidebar as a comonent so that it is accessible everywhere
     app.component('side-bar', {
-      props: ['toggle', 'cart', 'inventory'],
+      props: ['toggle', 'cart', 'inventory', 'remove'],
       // computed object in order to get total value of all addded items
       computed: {
         // cartTotal() {
@@ -189,14 +201,14 @@
                   <td class="center">{{quantity}}</td>
                   <td>\${{getPrice(key)*quantity}}</td>
                   <td class="center">
-                    <button class="btn btn-light cart-remove">
+                    <button @click="remove(key)" class="btn btn-light cart-remove">
                       &times;
                     </button>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <p class="center"><em>No items in cart</em></p>
+            <p class="center" ><em v-if="Object.keys(cart).length===0">No items in cart</em></p>
             <div class="spread">
               <span><strong>Total:</strong> \${{cartTotal()}}</span>
               <button class="btn btn-light">Checkout</button>
