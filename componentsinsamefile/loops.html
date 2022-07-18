@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Basics</title>
+</head>
+
+<body>
+    <style>
+        .box1 {
+            background-color: aqua;
+            height: 100px;
+            width: 100px;
+        }
+
+        /* css for v-cloak */
+        [v-cloak] {
+            display: none;
+        }
+
+        input {
+            margin: 10px;
+            display: block;
+        }
+    </style>
+    <div id="app" v-cloak>
+        <login-form />
+
+    </div>
+    <!-- add vue3 -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <!-- vue code is written in <script></script> -->
+    <script>
+        // everything inside createApp called options object either its a function or variable, it will live here that we are going to use in html
+        let app = Vue.createApp({
+            // create a function data
+            data: function () {
+                return {
+                    // return a variable
+                    greeting: 'hello world',
+                    isVisible: false,
+                    isShow: true
+                }
+            },
+            // methods is an object for adding custom functions
+            methods: {
+                toggleButton() {
+                    // in order to access the variables in everywhere in vue application we use this method
+                    return this.isVisible = !this.isVisible;
+                },
+                greet() {
+                    console.log(this.greeting)
+                },
+                // if we want to pass a paramter
+                greet(greeting) {
+                    console.log(greeting)
+                }
+            },
+        });
+        app.component('login-form', {
+            // in order to save yourself from repeating we use loops
+            // as a simple example of loop
+            // template: `
+            //   <form @submit.prevent='handleSubmit'>
+            //     <h1>{{title}}</h1>
+            //     <p v-for="(str,i) in inputs" key="i" >{{str}}</p>
+            //     </form>
+            //   `,
+            template: `
+              <form @submit.prevent='handleSubmit'>
+                <h1>{{title}}</h1>
+                <login-input type="email" v-model="email"  v-bind:label="emailLabel" />
+                <login-input type="password" v-model="password" :label="passwordLabel" />
+                <login-input type="password" v-model="confirmpassword" label="reenter password" />
+                <button type="submit"> Submit</button>
+                </form>
+              `,
+            components: ['login-input'],
+            data: function () {
+                return {
+                    title: 'login-form',
+                    // inputs: ['email', 'password', 'name'],
+                    email: '',
+                    password: '',
+                    confirmpassword: '',
+                    emailLabel: 'Email',
+                    passwordLabel: 'Password'
+                }
+            },
+            methods: {
+                handleSubmit(e) {
+                    e.preventDefault;
+                    console.log('submitted', this.email, this.password)
+                }
+            }
+        })
+        app.component('login-input', {
+            template: `
+            <label>
+                {{label}}
+                <input v-model="inputValue" />
+                </label>
+                `,
+            props: ['label', 'modelValue'],
+            computed: {
+                inputValue: {
+                    get() {
+                        return this.modelValue;
+                    },
+                    set(value) {
+                        this.$emit('update:modelValue', value);
+                    }
+                }
+            },
+
+        })
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
