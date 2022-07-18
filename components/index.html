@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Basics</title>
+</head>
+
+<body>
+    <style>
+        .box1 {
+            background-color: aqua;
+            height: 100px;
+            width: 100px;
+        }
+
+        /* css for v-cloak */
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <div id="app" v-cloak>
+        {{greeting}}
+        <!-- <input v-model="greeting" /> -->
+        <!-- in order to get whatever is there in input after pressing enter keyword -->
+        <!-- here enter is an event modifier in vue js, so you are not just listening to keyup event you are specifically listening to enter event -->
+        <!-- we can chain as many modifiers as we want  -->
+        <!-- <button @click.right="toggleButton">Toggle box</button> -->
+        <!-- <input v-model="greeting" @keyup.enter="greet" /> -->
+        <!-- in order to pass paramters we use paranthesis -->
+        <input v-model="greeting" @keyup.enter="greet(greeting+'!!!!!')" />
+        <hr />
+        <div v-if="isVisible" class="box1"></div>
+        <!-- here we add events using v-on followed by type of event -->
+        <button v-on:click="isVisible=true">Show box</button>
+        <!-- if we want to toggle the button -->
+        <button v-on:click="isVisible=!isVisible">Toggle box</button>
+        <!-- another way is to replace v-on: to @ -->
+        <button @click="toggleButton">Toggle box</button>
+
+
+    </div>
+    <!-- add vue3 -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <!-- vue code is written in <script></script> -->
+    <script>
+        // everything inside createApp called options object either its a function or variable, it will live here that we are going to use in html
+        let app = Vue.createApp({
+            // create a function data
+            data: function () {
+                return {
+                    // return a variable
+                    greeting: 'hello world',
+                    isVisible: false,
+                    isShow: true
+                }
+            },
+            // methods is an object for adding custom functions
+            methods: {
+                toggleButton() {
+                    // in order to access the variables in everywhere in vue application we use this method
+                    return this.isVisible = !this.isVisible;
+                },
+                greet() {
+                    console.log(this.greeting)
+                },
+                // if we want to pass a paramter
+                greet(greeting) {
+                    console.log(greeting)
+                }
+            },
+        });
+        // tell this vue application to mount somewhere in div with id app
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
