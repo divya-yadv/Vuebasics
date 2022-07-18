@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Basics</title>
+</head>
+
+<body>
+    <style>
+        .box {
+            background-color: aqua;
+            height: 100px;
+            width: 100px;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+    <div id="app" v-cloak>
+        <button @click="toggleButton">Toggle box</button>
+        <test-box v-if="isVisible" />
+    </div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        let app = Vue.createApp({
+            data: function () {
+                return {
+                    isVisible: false,
+                }
+            },
+            methods: {
+                toggleButton() {
+                    return this.isVisible = !this.isVisible;
+                },
+            },
+            updated() {
+                console.log("updated")
+            }
+        });
+        app.component('test-box', {
+            template: `
+            <div class="box">
+                </div>
+            `,
+            created() {
+                console.log("created");
+            },
+            mounted() {
+                console.log("mounted");
+
+            },
+            unmounted() {
+                console.log("unmounted");
+
+            },
+        })
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
