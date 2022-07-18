@@ -20,26 +20,14 @@
         [v-cloak] {
             display: none;
         }
+
+        input {
+            margin: 10px;
+            display: block;
+        }
     </style>
     <div id="app" v-cloak>
-        {{greeting}}
-        <!-- <input v-model="greeting" /> -->
-        <!-- in order to get whatever is there in input after pressing enter keyword -->
-        <!-- here enter is an event modifier in vue js, so you are not just listening to keyup event you are specifically listening to enter event -->
-        <!-- we can chain as many modifiers as we want  -->
-        <!-- <button @click.right="toggleButton">Toggle box</button> -->
-        <!-- <input v-model="greeting" @keyup.enter="greet" /> -->
-        <!-- in order to pass paramters we use paranthesis -->
-        <input v-model="greeting" @keyup.enter="greet(greeting+'!!!!!')" />
-        <hr />
-        <div v-if="isVisible" class="box1"></div>
-        <!-- here we add events using v-on followed by type of event -->
-        <button v-on:click="isVisible=true">Show box</button>
-        <!-- if we want to toggle the button -->
-        <button v-on:click="isVisible=!isVisible">Toggle box</button>
-        <!-- another way is to replace v-on: to @ -->
-        <button @click="toggleButton">Toggle box</button>
-
+        <login-form />
 
     </div>
     <!-- add vue3 -->
@@ -72,7 +60,35 @@
                 }
             },
         });
-        // tell this vue application to mount somewhere in div with id app
+        // in order to create custom components we use app.component
+        app.component('login-form', {
+            // a template to render like html
+            // prevent page to refresh using prevent modifier
+            // data of this component will be available in this component only, not globally
+            template: `
+              <form @submit.prevent='handleSubmit'>
+                <h1>{{title}}</h1>
+                <input  type="email" v-model="email" />
+                <input type="password" v-model="password" />
+                <button type="submit"> Submit</button>
+                </form>
+              `,
+            //   structure will be same like app as this is also a component
+            data: function () {
+                return {
+                    title: 'login-form',
+                    email: '',
+                    password: '',
+                }
+            },
+            methods: {
+                handleSubmit(e) {
+                    // prevent page to refresh
+                    e.preventDefault;
+                    console.log('submitted', this.email, this.password)
+                }
+            }
+        })
         app.mount("#app");
     </script>
 </body>
