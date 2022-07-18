@@ -4,7 +4,7 @@
             {{ item.name }}
         </div>
         <div class="card-body">
-            <i class="icofont-10x icofont- {{item.icon}} "></i>
+            <i class="icofont-10x"></i>
             <form>
                 <div class="row">
                     <div class="cell">
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+
 export default {
     props: [
         'item', 'addToCart'

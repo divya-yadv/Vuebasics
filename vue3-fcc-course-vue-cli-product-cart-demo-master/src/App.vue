@@ -28,15 +28,15 @@
 import Sidebar from '@/components/Sidebar.vue'
 import food from './food.json'
 export default {
-  componets: {
-    Sidebar
-  },
   data() {
     return {
-      showSideBar: true,
+      showSideBar: false,
       inventory: food,
       cart: {}
     }
+  },
+  components: {
+    Sidebar
   },
   computed: {
     totalQuantity() {
@@ -65,9 +65,9 @@ export default {
 }
 </script>
 
-<!-- <style>
+<style>
 body {
   margin: 0px;
   padding: 0px;
 }
-</style> -->
+</style>
