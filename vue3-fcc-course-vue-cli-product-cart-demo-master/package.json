@@ -25,7 +25,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^7.0.0-0"
+    "eslint-plugin-vue": "^7.0.0-0",
+    "sass": "1.32.8",
+    "sass-loader": "10.1.1"
   },
   "eslintConfig": {
     "root": true,
@@ -39,7 +41,19 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-unused-components" : "warn",
+      "no-undef": "warn",
+      "no-spaced-func":"warn",
+      "key-spacing":"off",
+      "semi":"off",
+      "space-before-blocks":"off",
+      "space-before-function-paren":"off",
+      "no-multiple-empty-lines":"off",
+      "eol-last":"off",
+      "indent":"off",
+      "no-return-assign":"off"
+      }
   },
   "browserslist": [
     "> 1%",
