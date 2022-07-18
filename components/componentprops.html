@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Basics</title>
+</head>
+
+<body>
+    <style>
+        .box1 {
+            background-color: aqua;
+            height: 100px;
+            width: 100px;
+        }
+
+        /* css for v-cloak */
+        [v-cloak] {
+            display: none;
+        }
+
+        input {
+            margin: 10px;
+            display: block;
+        }
+    </style>
+    <div id="app" v-cloak>
+        <login-form />
+
+    </div>
+    <!-- add vue3 -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <!-- vue code is written in <script></script> -->
+    <script>
+        // everything inside createApp called options object either its a function or variable, it will live here that we are going to use in html
+        let app = Vue.createApp({
+            // create a function data
+            data: function () {
+                return {
+                    // return a variable
+                    greeting: 'hello world',
+                    isVisible: false,
+                    isShow: true
+                }
+            },
+            // methods is an object for adding custom functions
+            methods: {
+                toggleButton() {
+                    // in order to access the variables in everywhere in vue application we use this method
+                    return this.isVisible = !this.isVisible;
+                },
+                greet() {
+                    console.log(this.greeting)
+                },
+                // if we want to pass a paramter
+                greet(greeting) {
+                    console.log(greeting)
+                }
+            },
+        });
+        app.component('login-form', {
+            // v-bind turns a normal attribute into javascript that can be passed around
+            // shorthand for v-bind: is :
+            // we can also pass a string instead of varaible by removing colon, so vue is no longer looking for a variable
+            template: `
+              <form @submit.prevent='handleSubmit'>
+                <h1>{{title}}</h1>
+                <login-input type="email" v-model="email"  v-bind:label="emailLabel" />
+                <login-input type="password" v-model="password" :label="passwordLabel" />
+                <login-input type="password" v-model="confirmpassword" label="reenter password" />
+                <button type="submit"> Submit</button>
+                </form>
+              `,
+            //   in order to register compoent here, so this component will know that it needs to be used
+            components: ['login-input'],
+            //   structure will be same like app as this is also a component
+            data: function () {
+                return {
+                    title: 'login-form',
+                    email: '',
+                    password: '',
+                    confirmpassword: '',
+                    emailLabel: 'Email',
+                    passwordLabel: 'Password'
+                }
+            },
+            methods: {
+                handleSubmit(e) {
+                    e.preventDefault;
+                    console.log('submitted', this.email, this.password)
+                }
+            }
+        })
+        app.component('login-input', {
+            // here we saw we can access input change in this component but we need to access it in parent component too
+            // template: `
+            // <label>
+            //     {{label}}
+            //     <input v-model="inputValue" />
+            //     </label>
+            //     `,
+            // data: function () {
+            //     return {
+            //         inputValue: ''
+            //     }
+            // },
+            // in order to see changes in parent component too
+            template: `
+            <label>
+                {{label}}
+                <input v-model="inputValue" />
+                </label>
+                `,
+            // in order to access props from parent component
+            props: ['label', 'modelValue'],
+            // we need to make sure that if something changes in child component how to change it in parent component as well
+            // for that we use computed object where we can put varaible names as keys and when it changes we can actually make it to run getter and setter functions
+            computed: {
+                // here we are trying to sync modelValue and inputValue from child to parent
+                inputValue: {
+                    get() {
+                        // we want to get this from parent component as current value 
+                        // to achieve this we use v-model directive, it helps us to get the value and we can accept this modelValue as props from parent
+                        // under the hood v-model gives us a prop modelValue that is mapped to that particluar value so we don't need to bind it in order to pass it as props
+                        return this.modelValue;
+                    },
+                    set(value) {
+                        // console.log(value)
+                        // emit allows us to emit events that other components can listen to
+                        // we can use custom event or predefined vue events
+                        //first argument is type of event that we are passing and second is the value that is this value that we are getting from input,
+                        // PS: we are using inputValue here to sync with
+                        // here v-model actually listening this update event in parent component else we have to manually tell it to listen
+                        this.$emit('update:modelValue', value);
+                    }
+                    // we have to do this beacause props are immutable we can't change them in child so we have to set the changes in parent component
+                }
+            },
+
+
+        })
+        app.mount("#app");
+    </script>
+</body>
+
+</html>
