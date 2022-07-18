@@ -23,7 +23,14 @@
     </style>
     <div id="app" v-cloak>
         {{greeting}}
-        <input v-model="greeting" />
+        <!-- <input v-model="greeting" /> -->
+        <!-- in order to get whatever is there in input after pressing enter keyword -->
+        <!-- here enter is an event modifier in vue js, so you are not just listening to keyup event you are specifically listening to enter event -->
+        <!-- we can chain as many modifiers as we want  -->
+        <!-- <button @click.right="toggleButton">Toggle box</button> -->
+        <!-- <input v-model="greeting" @keyup.enter="greet" /> -->
+        <!-- in order to pass paramters we use paranthesis -->
+        <input v-model="greeting" @keyup.enter="greet(greeting+'!!!!!')" />
         <hr />
         <div v-if="isVisible" class="box1"></div>
         <!-- here we add events using v-on followed by type of event -->
@@ -32,6 +39,7 @@
         <button v-on:click="isVisible=!isVisible">Toggle box</button>
         <!-- another way is to replace v-on: to @ -->
         <button @click="toggleButton">Toggle box</button>
+
 
     </div>
     <!-- add vue3 -->
@@ -52,8 +60,15 @@
             // methods is an object for adding custom functions
             methods: {
                 toggleButton() {
-                    // in order to access the variables we use this method
+                    // in order to access the variables in everywhere in vue application we use this method
                     return this.isVisible = !this.isVisible;
+                },
+                greet() {
+                    console.log(this.greeting)
+                },
+                // if we want to pass a paramter
+                greet(greeting) {
+                    console.log(greeting)
                 }
             },
         });
