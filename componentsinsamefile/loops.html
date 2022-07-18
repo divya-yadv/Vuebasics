@@ -69,12 +69,20 @@
             //     <p v-for="(str,i) in inputs" key="i" >{{str}}</p>
             //     </form>
             //   `,
+
+
+
+            // bind everything according to input here
             template: `
               <form @submit.prevent='handleSubmit'>
                 <h1>{{title}}</h1>
-                <login-input type="email" v-model="email"  v-bind:label="emailLabel" />
-                <login-input type="password" v-model="password" :label="passwordLabel" />
-                <login-input type="password" v-model="confirmpassword" label="reenter password" />
+                <login-input
+                v-for="(input,i) in inputs"
+                :key="i"  
+                :type="input.type"
+                :label="input.label"
+                v-model="input.value"
+                /> 
                 <button type="submit"> Submit</button>
                 </form>
               `,
@@ -83,6 +91,19 @@
                 return {
                     title: 'login-form',
                     // inputs: ['email', 'password', 'name'],
+                    inputs: [
+                        {
+                            type: 'email',
+                            label: 'Email',
+                            value: ''
+                        },
+                        {
+                            type: 'password',
+                            label: 'Enter Password',
+                            value: ''
+                        },
+
+                    ],
                     email: '',
                     password: '',
                     confirmpassword: '',
@@ -93,18 +114,19 @@
             methods: {
                 handleSubmit(e) {
                     e.preventDefault;
-                    console.log('submitted', this.email, this.password)
+                    console.log('submitted', this.inputs[0].value, this.inputs[1].value);
                 }
             }
         })
         app.component('login-input', {
+            // pass type here as props
             template: `
             <label>
                 {{label}}
-                <input v-model="inputValue" />
+                <input :type="type" v-model="inputValue" />
                 </label>
                 `,
-            props: ['label', 'modelValue'],
+            props: ['label', 'type', 'modelValue'],
             computed: {
                 inputValue: {
                     get() {
