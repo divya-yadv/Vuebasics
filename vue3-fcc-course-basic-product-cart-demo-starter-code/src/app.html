@@ -94,7 +94,7 @@
     </footer>
     <!-- add sidebar and toggle functionality -->
     <!-- add cart to pass as props -->
-    <side-bar v-if="showSideBar" :toggle='toggleView' :cart="cart" />
+    <side-bar v-if="showSideBar" :toggle='toggleView' :cart="cart" :inventory="inventory" />
 
   </div>
   <!-- add vue js -->
@@ -134,11 +134,27 @@
     })
     // add sidebar as a comonent so that it is accessible everywhere
     app.component('side-bar', {
-      props: ['toggle', 'cart'],
+      props: ['toggle', 'cart', 'inventory'],
       // computed object in order to get total value of all addded items
       computed: {
+        // cartTotal() {
+        //   return (this.cart.carrots * 4.82 + this.cart.cherries * 1.04 + this.cart.pineapples * 1.62).toFixed(2);
+
+        // }
+      },
+      methods: {
+        getPrice(key) {
+          const product = this.inventory.find((product) => {
+            return product.name === key;
+          });
+          return product.price["USD"];
+        },
         cartTotal() {
-          return (this.cart.carrots * 4.82 + this.cart.cherries * 1.04 + this.cart.pineapples * 1.62).toFixed(2);
+          // const names = Object.keys(this.cart);
+          const total = Object.entries(this.cart).reduce((acc, curritem, index) => {
+            return acc + (curritem[1] * this.getPrice(curritem[0]));
+          }, 0)
+          return total;
         }
       },
       // update cart items values using cart from props
@@ -166,12 +182,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><i class="icofont-carrot icofont-3x"></i></td>
-                  <td>Carrot</td>
-                  <td>$1.00</td>
-                  <td class="center">{{cart.carrots}}</td>
-                  <td>\${{cart.carrots*4.82}}</td>
+                <tr v-for="(quantity,key,i) in cart" :key="i" >
+                  <td><i class="icofont- icofont-3x"></i></td>
+                  <td>{{key}}</td>
+                  <td>\${{getPrice(key)}}</td>
+                  <td class="center">{{quantity}}</td>
+                  <td>\${{getPrice(key)*quantity}}</td>
                   <td class="center">
                     <button class="btn btn-light cart-remove">
                       &times;
@@ -182,7 +198,7 @@
             </table>
             <p class="center"><em>No items in cart</em></p>
             <div class="spread">
-              <span><strong>Total:</strong> \${{cartTotal}}</span>
+              <span><strong>Total:</strong> \${{cartTotal()}}</span>
               <button class="btn btn-light">Checkout</button>
             </div>
           </div>
