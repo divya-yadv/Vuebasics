@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Splendid Food</title>
+  <link rel="stylesheet" href="styles/style.min.css">
+  <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../public/favicon.ico" type="image/ico">
+</head>
+
+<body>
+
+  <div id="app">
+
+    <header class="top-bar spread">
+      <nav class="top-bar-nav">
+        <a href="#" class="top-bar-link">
+          <i class="icofont-spoon-and-fork"></i>
+          <span>Home</span>
+        </a>
+        <a href="views/products.html" class="top-bar-link">
+          <span>Products</span>
+        </a>
+        <a href="views/past-orders.html" class="top-bar-link">
+          <span>Past Orders</span>
+        </a>
+      </nav>
+      <!-- toggle view by clicking on cart button -->
+      <a @click="toggleView" class="top-bar-cart-link">
+        <i class="icofont-cart-alt icofont-1x"></i>
+        <span>Cart({{totalQuantity}})</span>
+      </a>
+    </header>
+
+    <div class="splash-container">
+      <div class="splash">
+        <h1>Splendid Food</h1>
+      </div>
+    </div>
+
+    <main class="wrapper">
+
+
+      <h2>Recommended</h2>
+
+      <div class="recommended">
+        <!-- add loop for 3 items and update fields accordingly -->
+        <div v-for="(item,index) in inventory.slice(0,3)" :key="item.id" class="card">
+          <div class="card-title">
+            {{item.name}}
+          </div>
+          <div class="card-body">
+            <i class="icofont-10x icofont- {{item.icon}} "></i>
+            <form>
+              <div class="row">
+                <div class="cell">
+                  <label>Type:</label>
+                </div>
+                <div class="cell">
+                  <em>{{item.type}}</em>
+                </div>
+              </div>
+              <div class="row">
+                <div class="cell">
+                  <label>Price:</label>
+                </div>
+                <div class="cell">
+                  ${{item.price["USD"]}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="cell">
+                  <label>Quantity:</label>
+                </div>
+                <div class="cell">
+                  <!-- add quantity value from vue , number to get the number not string-->
+                  <input type="number" v-model.number="item.quantity">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer">
+            <!-- add addToCart functionality -->
+            <button @click="addToCart(item.name,index)" class="btn btn-light">Add to cart</button>
+          </div>
+        </div>
+
+
+      </div>
+
+    </main>
+
+    <footer>
+    </footer>
+    <!-- add sidebar and toggle functionality -->
+    <!-- add cart to pass as props -->
+    <side-bar v-if="showSideBar" :toggle='toggleView' :cart="cart" :inventory="inventory" :remove="removeItem" />
+
+  </div>
+  <!-- add vue js -->
+  <script src="https://unpkg.com/vue@next"></script>
+  <!-- create vue instance -->
+  <script>
+    let app = Vue.createApp({
+      data: function () {
+        return {
+          // initialise inventory with 0 items for each
+          inventory: [],
+          // store items in cart
+          cart: {},
+          showSideBar: false,
+        }
+      },
+      computed: {
+        totalQuantity() {
+          const total = Object.values(this.cart).reduce((acc, item, index) => {
+            return acc + item;
+          }, 0)
+          return total;
+        }
+      },
+      methods: {
+        addToCart(name, i) {
+          //  receive type and number and then increase it
+          if (!this.cart[name]) {
+            this.cart[name] = 0;
+          }
+          this.cart[name] += this.inventory[i].quantity;
+          this.inventory[i].quantity = 0;
+          console.log(this.cart);
+        },
+        toggleView() {
+          return this.showSideBar = !this.showSideBar;
+        },
+        removeItem(item) {
+          delete this.cart[item];
+        }
+
+      },
+      // fetch data from food.json
+      async mounted() {
+        const res = await fetch('./food.json');
+        const data = await res.json();
+        this.inventory = data;
+      }
+    })
+    // add sidebar as a comonent so that it is accessible everywhere
+    app.component('side-bar', {
+      props: ['toggle', 'cart', 'inventory', 'remove'],
+      // computed object in order to get total value of all addded items
+      computed: {
+        // cartTotal() {
+        //   return (this.cart.carrots * 4.82 + this.cart.cherries * 1.04 + this.cart.pineapples * 1.62).toFixed(2);
+
+        // }
+      },
+      methods: {
+        getPrice(key) {
+          const product = this.inventory.find((product) => {
+            return product.name === key;
+          });
+          return product.price["USD"];
+        },
+        cartTotal() {
+          // const names = Object.keys(this.cart);
+          const total = Object.entries(this.cart).reduce((acc, curritem, index) => {
+            return acc + (curritem[1] * this.getPrice(curritem[0]));
+          }, 0)
+          return total;
+        }
+      },
+      // update cart items values using cart from props
+      template: `
+      <aside class="cart-container">
+        <div class="cart">
+          <h1 class="cart-title spread">
+            <span>
+              Cart
+              <i class="icofont-cart-alt icofont-1x"></i>
+            </span>
+            <button @click="toggle" class="cart-close">&times;</button>
+          </h1>
+
+          <div class="cart-body">
+            <table class="cart-table">
+              <thead>
+                <tr>
+                  <th><span class="sr-only">Product Image</span></th>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(quantity,key,i) in cart" :key="i" >
+                  <td><i class="icofont- icofont-3x"></i></td>
+                  <td>{{key}}</td>
+                  <td>\${{getPrice(key)}}</td>
+                  <td class="center">{{quantity}}</td>
+                  <td>\${{getPrice(key)*quantity}}</td>
+                  <td class="center">
+                    <button @click="remove(key)" class="btn btn-light cart-remove">
+                      &times;
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="center" ><em v-if="Object.keys(cart).length===0">No items in cart</em></p>
+            <div class="spread">
+              <span><strong>Total:</strong> \${{cartTotal()}}</span>
+              <button class="btn btn-light">Checkout</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+      `,
+
+    });
+    // mount app at div with id app
+    app.mount('#app');
+  </script>
+</body>
+
+</html>
